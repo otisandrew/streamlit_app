@@ -176,10 +176,22 @@ def make_plot(result):
     for ax, (_, row) in zip(axes, result.iterrows()):
         values = [row["Baseline"], row["Projected"]]
 
+        error_values = [
+            1.96 * row["Residual Std Error"],
+            1.96 * row["Approx Std Error"],
+        ]
+
         ax.bar(
             ["Baseline", "Projected"],
             values,
+            yerr=error_values,
+            capsize=0,
             color=["#1f77b4", "#ff7f0e"],
+            ecolor="gray",
+            error_kw={
+                "elinewidth": 1,
+                "capsize": 0,
+            },
         )
 
         ax.set_title(row["Metric"])
@@ -226,26 +238,11 @@ def make_plot(result):
 
     return fig
 
-
-summary = calculate_words_per_article()
-
-st.subheader("How many words is 1 article equal to?")
-
-st.dataframe(
-    summary[["Metric", "Display"]].rename(
-        columns={"Display": "Equivalent Words"}
-    ),
-    width="stretch",
-    hide_index=True,
-)
-
-st.divider()
-
 col1, col2 = st.columns(2)
 
 with col1:
     articles = st.slider(
-        "Weekly Articles Published",
+        "Weekly Articles Published (Average = 18)",
         min_value=10,
         max_value=baseline_articles + 20,
         value=baseline_articles,
@@ -254,7 +251,7 @@ with col1:
 
 with col2:
     words = st.slider(
-        "Total word count",
+        "Total word count (Average = 29,500)",
         min_value=max(0, baseline_words - 20000),
         max_value=baseline_words + 20000,
         value=baseline_words,
@@ -300,6 +297,20 @@ st.dataframe(
 
 fig = make_plot(result)
 st.pyplot(fig)
+
+summary = calculate_words_per_article()
+
+st.subheader("How many words is 1 article equal to?")
+
+st.dataframe(
+    summary[["Metric", "Display"]].rename(
+        columns={"Display": "Equivalent Words"}
+    ),
+    width="stretch",
+    hide_index=True,
+)
+
+st.divider()
 
 st.caption(
     "Projected = Baseline + Article Delta × Article Effect + "
