@@ -190,7 +190,7 @@ st.subheader("How many words is 1 article equal to?")
 
 st.dataframe(
     summary[["Metric", "Display"]].rename(
-        columns={"Display": "Equivalent Words per Article"}
+        columns={"Display": "Equivalent Words"}
     ),
     width="stretch",
     hide_index=True,
