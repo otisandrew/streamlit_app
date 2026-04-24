@@ -47,6 +47,13 @@ model = pd.DataFrame({
         0.008,
         0.001,
     ],
+
+    "Residual Std Error": [
+        57952.772680020884,  # Page Views
+        37394.52187763929,      # Engaged Minutes — replace when you have it
+        760.5118600423876,      # Account Registrations — replace when you have it
+        52.044676873922135,      # Subscriptions — replace when you have it
+    ],
 })
 
 baseline_articles = 18
@@ -76,6 +83,7 @@ def calculate_projection(articles, words):
     result["Approx Std Error"] = (
         (delta_articles * result["Article Std Error"]) ** 2
         + (delta_words * result["Word Std Error per Word"]) ** 2
+        + result["Residual Std Error"] ** 2
     ).pow(0.5)
 
     result["Low 95%"] = result["Projected"] - 1.96 * result["Approx Std Error"]
@@ -261,5 +269,5 @@ st.pyplot(fig)
 st.caption(
     "Projected = Baseline + Article Delta × Article Effect + "
     "Word Delta × Word Effect per Word. "
-    "95% range is approximated using coefficient standard errors."
+    "95% range includes coefficient uncertainty plus residual model error."
 )
