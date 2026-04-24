@@ -48,11 +48,39 @@ model = pd.DataFrame({
         0.001,
     ],
 
+    #"Residual Std Error": [
+    #    57952.772680020884,  # Page Views
+    #    37394.52187763929,      # Engaged Minutes — replace when you have it
+    #    760.5118600423876,      # Account Registrations — replace when you have it
+    #    52.044676873922135,      # Subscriptions — replace when you have it
+    #],
+
     "Residual Std Error": [
-        57952.772680020884,  # Page Views
-        37394.52187763929,      # Engaged Minutes — replace when you have it
-        760.5118600423876,      # Account Registrations — replace when you have it
-        52.044676873922135,      # Subscriptions — replace when you have it
+        46404.778253,
+        37659.308902,
+        681.724890,
+        50.927862,
+    ],
+
+    "Posts Posts Covariance": [
+        2.583466e6,
+        1.701461e6,
+        5.626509e2,
+        3.130446e0,
+    ],
+
+    "Posts Words Covariance": [
+        -1.013996e3,
+        -6.678139e2,
+        -2.214952e-1,
+        -1.238232e-3,
+    ],
+
+    "Words Words Covariance": [
+        6.824645e-1,
+        4.494686e-1,
+        1.528026e-4,
+        8.425159e-7,
     ],
 })
 
@@ -80,9 +108,16 @@ def calculate_projection(articles, words):
 
     result["Change vs Baseline"] = result["Projected"] - result["Baseline"]
 
+    #result["Approx Std Error"] = (
+    #    (delta_articles * result["Article Std Error"]) ** 2
+    #    + (delta_words * result["Word Std Error per Word"]) ** 2
+    #    + result["Residual Std Error"] ** 2
+    #).pow(0.5)
+
     result["Approx Std Error"] = (
-        (delta_articles * result["Article Std Error"]) ** 2
-        + (delta_words * result["Word Std Error per Word"]) ** 2
+        (delta_articles ** 2) * result["Posts Posts Covariance"]
+        + (delta_words ** 2) * result["Words Words Covariance"]
+        + 2 * delta_articles * delta_words * result["Posts Words Covariance"]
         + result["Residual Std Error"] ** 2
     ).pow(0.5)
 
