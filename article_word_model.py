@@ -235,7 +235,6 @@ def make_plot(result):
 
     return fig
 
-
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -267,10 +266,10 @@ with col3:
 
 result = calculate_projection(articles, mean_words, topics)
 
-st.metric(
-    "Mean Word Count per Article",
-    f"{mean_words:,.0f}",
-)
+#st.metric(
+#    "Mean Word Count per Article",
+#    f"{mean_words:,.0f}",
+#)
 
 display_cols = [
     "Metric",
