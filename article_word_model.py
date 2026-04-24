@@ -148,18 +148,29 @@ def make_plot(result):
         padding = (high - low) * 0.2 if high != low else high * 0.2
         ax.set_ylim(max(0, low - padding), high + padding)
 
+        #change = row["Change vs Baseline"]
+        #ax.text(
+        #    1,
+        #    row["Projected"],
+        #    f"{change:+,.0f}",
+        #    ha="center",
+        #    va="bottom",
+        #    fontsize=10,
+        #    fontweight="bold",
+        #)
+
         change = row["Change vs Baseline"]
+        percent_change = change / row["Baseline"] if row["Baseline"] else 0
 
         ax.text(
             1,
             row["Projected"],
-            f"{change:+,.0f}",
+            f"{percent_change:+.0%}",
             ha="center",
             va="bottom",
             fontsize=10,
             fontweight="bold",
         )
-
         ax.tick_params(axis="x", rotation=25)
 
     fig.suptitle("Weekly Chronicle.com Projected Metrics", y=1.05)
@@ -186,7 +197,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     articles = st.slider(
-        "Articles",
+        "Weekly Articles Published",
         min_value=10,
         max_value=baseline_articles + 20,
         value=baseline_articles,
