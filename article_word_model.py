@@ -25,92 +25,92 @@ model = pd.DataFrame({
     ],
 
     "Article Effect": [
-        7670.5871,
-        3557.9361,
-        -3.1059,
-        4.1938,
+        7566.6360,
+        3536.0864,
+        -3.1476,
+        4.1451,
     ],
     "Article Std Error": [
-        1904.381,
-        1305.388,
-        25.780,
-        1.753,
+        1812.078,
+        1242.753,
+        24.456,
+        1.668,
     ],
 
     "Mean Words Effect": [
-        22.8580,
-        31.9386,
-        0.3216,
-        0.0003,
+        22.5574,
+        31.8648,
+        0.3176,
+        0.0004,
     ],
     "Mean Words Std Error": [
-        14.104,
-        9.671,
-        0.191,
+        14.060,
+        9.644,
+        0.190,
         0.013,
     ],
 
     "Topic Effect": [
-        1016.2025,
-        436.0839,
-        81.6239,
-        -3.4655,
+        1315.3837,
+        513.2204,
+        87.0369,
+        -3.5822,
     ],
     "Topic Std Error": [
-        2991.338,
-        2051.728,
-        40.519,
-        2.759,
+        2909.563,
+        1995.880,
+        39.277,
+        2.683,
     ],
 
     "Residual Std Error": [
-        56279.745857,
-        38603.290347,
-        762.370406,
-        51.654574,
+        56257.426323,
+        38599.714521,
+        759.609401,
+        51.607990,
     ],
 
     "Articles Articles Covariance": [
-        3.626668e6,
-        1.704039e6,
-        6.646040e2,
-        3.074299e0,
+        3.283627e6,
+        1.544436e6,
+        5.981119e2,
+        2.781999e0,
     ],
     "Articles Mean Words Covariance": [
-        7236.697864,
-        3393.211266,
-        1.323410,
-        0.006002,
+        6597.152721,
+        3097.601330,
+        1.199604,
+        0.005467,
     ],
     "Articles Topics Covariance": [
-        -4.272824e6,
-        -2.011179e6,
-        -7.843937e2,
-        -3.642994e0,
+        -3.791977e6,
+        -1.786729e6,
+        -6.919444e2,
+        -3.234415e0,
     ],
     "Mean Words Mean Words Covariance": [
-        198.926952,
-        93.532663,
-        0.036479,
-        0.000168,
+        197.683010,
+        93.015713,
+        0.036022,
+        0.000167,
     ],
     "Mean Words Topics Covariance": [
-        -10019.449889,
-        -4718.529850,
-        -1.840306,
-        -0.008317,
+        -9257.707114,
+        -4367.468522,
+        -1.691384,
+        -0.007673,
     ],
     "Topics Topics Covariance": [
-        8.948104e6,
-        4.209586e6,
-        1.641810e3,
-        7.613108e0,
+        8.465560e6,
+        3.983537e6,
+        1.542699e3,
+        7.198256e0,
     ],
 })
 
 baseline_articles = 18
 baseline_mean_words = 1700
-baseline_topics = 12
+baseline_topics = 11
 
 def calculate_projection(articles, mean_words, topics):
     delta_articles = articles - baseline_articles
@@ -248,7 +248,7 @@ with col1:
 
 with col2:
     mean_words = st.slider(
-        f"Mean Words per Article (Average = {baseline_mean_words:,.0f})",
+        f"Mean Article Word Count (Average = {baseline_mean_words:,.0f})",
         min_value=500,
         max_value=int(baseline_mean_words + 2000),
         value=int(baseline_mean_words),
@@ -265,11 +265,6 @@ with col3:
     )
 
 result = calculate_projection(articles, mean_words, topics)
-
-#st.metric(
-#    "Mean Word Count per Article",
-#    f"{mean_words:,.0f}",
-#)
 
 display_cols = [
     "Metric",
