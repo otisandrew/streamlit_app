@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 st.set_page_config(
-    page_title="Weekly Article and Word Count Model",
+    page_title="Weekly Article, Word Count, and Topic Model",
     layout="wide",
 )
 
-st.title("Weekly Article and Word Count Model")
+st.title("Weekly Article, Word Count, and Topic Model")
 
 model = pd.DataFrame({
     "Metric": [
@@ -23,101 +23,126 @@ model = pd.DataFrame({
         2650,
         160,
     ],
+
     "Article Effect": [
-        7843.7313,
-        3305.1155,
-        31.8693,
-        2.6766,
+        7670.5871,
+        3557.9361,
+        -3.1059,
+        4.1938,
     ],
     "Article Std Error": [
-        1240.746,
-        881.787,
-        17.231,
-        1.133,
-    ],
-    "Word Effect per Word": [
-        3.6605,
-        2.1575,
-        0.0265,
-        0.001,
-    ],
-    "Word Std Error per Word": [
-        0.648,
-        0.418,
-        0.008,
-        0.001,
+        1904.381,
+        1305.388,
+        25.780,
+        1.753,
     ],
 
-    #"Residual Std Error": [
-    #    57952.772680020884,  # Page Views
-    #    37394.52187763929,      # Engaged Minutes — replace when you have it
-    #    760.5118600423876,      # Account Registrations — replace when you have it
-    #    52.044676873922135,      # Subscriptions — replace when you have it
-    #],
+    "Mean Words Effect": [
+        22.8580,
+        31.9386,
+        0.3216,
+        0.0003,
+    ],
+    "Mean Words Std Error": [
+        14.104,
+        9.671,
+        0.191,
+        0.013,
+    ],
+
+    "Topic Effect": [
+        1016.2025,
+        436.0839,
+        81.6239,
+        -3.4655,
+    ],
+    "Topic Std Error": [
+        2991.338,
+        2051.728,
+        40.519,
+        2.759,
+    ],
 
     "Residual Std Error": [
-        46404.778253,
-        37659.308902,
-        681.724890,
-        50.927862,
+        56279.745857,
+        38603.290347,
+        762.370406,
+        51.654574,
     ],
 
-    "Posts Posts Covariance": [
-        2.583466e6,
-        1.701461e6,
-        5.626509e2,
-        3.130446e0,
+    "Articles Articles Covariance": [
+        3.626668e6,
+        1.704039e6,
+        6.646040e2,
+        3.074299e0,
     ],
-
-    "Posts Words Covariance": [
-        -1.013996e3,
-        -6.678139e2,
-        -2.214952e-1,
-        -1.238232e-3,
+    "Articles Mean Words Covariance": [
+        7236.697864,
+        3393.211266,
+        1.323410,
+        0.006002,
     ],
-
-    "Words Words Covariance": [
-        6.824645e-1,
-        4.494686e-1,
-        1.528026e-4,
-        8.425159e-7,
+    "Articles Topics Covariance": [
+        -4.272824e6,
+        -2.011179e6,
+        -7.843937e2,
+        -3.642994e0,
+    ],
+    "Mean Words Mean Words Covariance": [
+        198.926952,
+        93.532663,
+        0.036479,
+        0.000168,
+    ],
+    "Mean Words Topics Covariance": [
+        -10019.449889,
+        -4718.529850,
+        -1.840306,
+        -0.008317,
+    ],
+    "Topics Topics Covariance": [
+        8.948104e6,
+        4.209586e6,
+        1.641810e3,
+        7.613108e0,
     ],
 })
 
 baseline_articles = 18
-baseline_words = 29500
+baseline_mean_words = 1700
+baseline_topics = 12
 
-
-def calculate_projection(articles, words):
+def calculate_projection(articles, mean_words, topics):
     delta_articles = articles - baseline_articles
-    delta_words = words - baseline_words
+    delta_mean_words = mean_words - baseline_mean_words
+    delta_topics = topics - baseline_topics
 
     result = model.copy()
 
     result["Current Articles"] = articles
-    result["Current Word Count"] = words
+    result["Current Mean Word Count per Article"] = mean_words
+    result["Current Topics Covered"] = topics
+
     result["Article Delta"] = delta_articles
-    result["Word Delta"] = delta_words
-    result["Mean Word Count per Article"] = words / articles if articles else 0
+    result["Mean Word Count Delta"] = delta_mean_words
+    result["Topic Delta"] = delta_topics
 
     result["Projected"] = (
         result["Baseline"]
         + delta_articles * result["Article Effect"]
-        + delta_words * result["Word Effect per Word"]
+        + delta_mean_words * result["Mean Words Effect"]
+        + delta_topics * result["Topic Effect"]
     )
 
     result["Change vs Baseline"] = result["Projected"] - result["Baseline"]
 
-    #result["Approx Std Error"] = (
-    #    (delta_articles * result["Article Std Error"]) ** 2
-    #    + (delta_words * result["Word Std Error per Word"]) ** 2
-    #    + result["Residual Std Error"] ** 2
-    #).pow(0.5)
-
     result["Approx Std Error"] = (
-        (delta_articles ** 2) * result["Posts Posts Covariance"]
-        + (delta_words ** 2) * result["Words Words Covariance"]
-        + 2 * delta_articles * delta_words * result["Posts Words Covariance"]
+        (delta_articles ** 2) * result["Articles Articles Covariance"]
+        + (delta_mean_words ** 2) * result["Mean Words Mean Words Covariance"]
+        + (delta_topics ** 2) * result["Topics Topics Covariance"]
+        + 2 * delta_articles * delta_mean_words * result["Articles Mean Words Covariance"]
+        + 2 * delta_articles * delta_topics * result["Articles Topics Covariance"]
+        + 2 * delta_mean_words * delta_topics * result["Mean Words Topics Covariance"]
         + result["Residual Std Error"] ** 2
     ).pow(0.5)
 
@@ -131,25 +156,25 @@ def calculate_words_per_article():
     summary = model.copy()
 
     summary["Words per Article Equivalent"] = (
-        summary["Article Effect"] / summary["Word Effect per Word"]
+        summary["Article Effect"] / summary["Mean Words Effect"]
     )
 
     summary["Words per Article Std Error"] = (
         summary["Words per Article Equivalent"]
         * (
             (summary["Article Std Error"] / summary["Article Effect"]) ** 2
-            + (
-                summary["Word Std Error per Word"]
-                / summary["Word Effect per Word"]
-            ) ** 2
+            + (summary["Mean Words Std Error"] / summary["Mean Words Effect"]) ** 2
         ) ** 0.5
     )
 
-    summary["Display"] = (
-        summary["Words per Article Equivalent"].map(lambda x: f"{x:,.0f}")
-        + " ± "
-        + summary["Words per Article Std Error"].map(lambda x: f"{x:,.0f}")
-        + " words"
+    summary["Display"] = summary.apply(
+        lambda row: "Fill in Mean Words Effect"
+        if row["Mean Words Effect"] == 0
+        else (
+            f"{row['Words per Article Equivalent']:,.0f}"
+            f" ± {row['Words per Article Std Error']:,.0f} words"
+        ),
+        axis=1,
     )
 
     return summary
@@ -197,40 +222,23 @@ def make_plot(result):
         ax.set_title(row["Metric"])
         ax.yaxis.set_major_formatter(FuncFormatter(format_y_axis))
 
-        #low = min(row["Baseline"], row["Projected"], row["Low 95%"])
-        #high = max(row["Baseline"], row["Projected"], row["High 95%"])
-
-        #padding = (high - low) * 0.2 if high != low else high * 0.2
-        #ax.set_ylim(max(0, low - padding), high + padding)
-
         high = max(row["Baseline"], row["Projected"], row["High 95%"])
-
         padding = high * 0.2 if high != 0 else 1
         ax.set_ylim(0, high + padding)
-
-        #change = row["Change vs Baseline"]
-        #ax.text(
-        #    1,
-        #    row["Projected"],
-        #    f"{change:+,.0f}",
-        #    ha="center",
-        #    va="bottom",
-        #    fontsize=10,
-        #    fontweight="bold",
-        #)
 
         change = row["Change vs Baseline"]
         percent_change = change / row["Baseline"] if row["Baseline"] else 0
 
         ax.text(
-            1.05,  # slight right offset
+            1.05,
             row["Projected"],
             f"{percent_change:+.0%}",
-            ha="left",  # anchor from left so it moves right cleanly
+            ha="left",
             va="bottom",
             fontsize=10,
             fontweight="bold",
         )
+
         ax.tick_params(axis="x", rotation=25)
 
     fig.suptitle("Weekly Chronicle.com Projected Metrics", y=1.05)
@@ -238,11 +246,12 @@ def make_plot(result):
 
     return fig
 
-col1, col2 = st.columns(2)
+
+col1, col2, col3 = st.columns(3)
 
 with col1:
     articles = st.slider(
-        "Weekly Articles Published (Average = 18)",
+        f"Weekly Articles Published (Average = {baseline_articles})",
         min_value=10,
         max_value=baseline_articles + 20,
         value=baseline_articles,
@@ -250,22 +259,29 @@ with col1:
     )
 
 with col2:
-    words = st.slider(
-        "Total word count (Average = 29,500)",
-        min_value=max(0, baseline_words - 20000),
-        max_value=baseline_words + 20000,
-        value=baseline_words,
-        step=1000,
+    mean_words = st.slider(
+        f"Mean Words per Article (Average = {baseline_mean_words:,.0f})",
+        min_value=500,
+        max_value=int(baseline_mean_words + 2000),
+        value=int(baseline_mean_words),
+        step=100,
     )
 
-mean_words_per_article = words / articles if articles else 0
+with col3:
+    topics = st.slider(
+        f"Weekly Topics Covered (Average = {baseline_topics})",
+        min_value=5,
+        max_value=max(20, baseline_topics + 20),
+        value=baseline_topics,
+        step=1,
+    )
+
+result = calculate_projection(articles, mean_words, topics)
 
 st.metric(
     "Mean Word Count per Article",
-    f"{mean_words_per_article:,.0f}",
+    f"{mean_words:,.0f}",
 )
-
-result = calculate_projection(articles, words)
 
 display_cols = [
     "Metric",
@@ -300,11 +316,11 @@ st.pyplot(fig)
 
 summary = calculate_words_per_article()
 
-st.subheader("How many words is 1 article equal to?")
+st.subheader("How many mean words is 1 article equal to?")
 
 st.dataframe(
     summary[["Metric", "Display"]].rename(
-        columns={"Display": "Equivalent Words"}
+        columns={"Display": "Equivalent Mean Words"}
     ),
     width="stretch",
     hide_index=True,
@@ -314,6 +330,7 @@ st.divider()
 
 st.caption(
     "Projected = Baseline + Article Delta × Article Effect + "
-    "Word Delta × Word Effect per Word. "
-    "95% range includes coefficient uncertainty plus residual model error."
+    "Mean Word Count Delta × Mean Words Effect + "
+    "Topic Delta × Topic Effect. "
+    "95% range includes coefficient uncertainty, covariance, and residual model error."
 )
