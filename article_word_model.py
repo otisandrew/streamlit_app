@@ -223,10 +223,10 @@ def make_plot(result):
         percent_change = change / row["Baseline"] if row["Baseline"] else 0
 
         ax.text(
-            1,
+            1.05,  # slight right offset
             row["Projected"],
             f"{percent_change:+.0%}",
-            ha="center",
+            ha="left",  # anchor from left so it moves right cleanly
             va="bottom",
             fontsize=10,
             fontweight="bold",
