@@ -142,11 +142,16 @@ def make_plot(result):
         ax.set_title(row["Metric"])
         ax.yaxis.set_major_formatter(FuncFormatter(format_y_axis))
 
-        low = min(row["Baseline"], row["Projected"], row["Low 95%"])
+        #low = min(row["Baseline"], row["Projected"], row["Low 95%"])
+        #high = max(row["Baseline"], row["Projected"], row["High 95%"])
+
+        #padding = (high - low) * 0.2 if high != low else high * 0.2
+        #ax.set_ylim(max(0, low - padding), high + padding)
+
         high = max(row["Baseline"], row["Projected"], row["High 95%"])
 
-        padding = (high - low) * 0.2 if high != low else high * 0.2
-        ax.set_ylim(max(0, low - padding), high + padding)
+        padding = high * 0.2 if high != 0 else 1
+        ax.set_ylim(0, high + padding)
 
         #change = row["Change vs Baseline"]
         #ax.text(
