@@ -230,7 +230,7 @@ def make_plot(result):
 
         ax.tick_params(axis="x", rotation=0)
 
-    fig.suptitle("Weekly Chronicle.com Projected Metrics", y=1.05)
+    #fig.suptitle("Weekly Chronicle.com Projected Metrics", y=1.05)
     plt.tight_layout()
 
     return fig
@@ -286,7 +286,7 @@ for col in [
 ]:
     table[col] = table[col].map(lambda x: f"{x:,.0f}")
 
-st.subheader("Projected Weekly Metrics")
+st.subheader("Projected Weekly Chronicle.com Metrics")
 
 st.dataframe(
     table,
