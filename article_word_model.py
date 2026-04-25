@@ -154,8 +154,8 @@ def calculate_projection(articles, mean_words, topics):
         + result["Residual Std Error"] ** 2
     ).pow(0.5)
 
-    result["Low Estimate"] = result["Projected"] - 1.96 * result["Approx Std Error"].clip(lower=0)
-    result["High Estimate"] = result["Projected"] + 1.96 * result["Approx Std Error"].clip(lower=0)
+    result["Low Estimate"] = (result["Projected"] - 1.96 * result["Approx Std Error"]).clip(lower=0)
+    result["High Estimate"] = (result["Projected"] + 1.96 * result["Approx Std Error"]).clip(lower=0)
 
     return result
 
