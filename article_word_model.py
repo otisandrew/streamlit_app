@@ -146,8 +146,8 @@ def calculate_projection(articles, mean_words, topics):
         + result["Residual Std Error"] ** 2
     ).pow(0.5)
 
-    result["Low 95%"] = result["Projected"] - 1.96 * result["Approx Std Error"]
-    result["High 95%"] = result["Projected"] + 1.96 * result["Approx Std Error"]
+    result["Low Estimate"] = result["Projected"] - 1.96 * result["Approx Std Error"]
+    result["High Estimate"] = result["Projected"] + 1.96 * result["Approx Std Error"]
 
     return result
 
@@ -211,7 +211,7 @@ def make_plot(result):
         ax.set_title(row["Metric"])
         ax.yaxis.set_major_formatter(FuncFormatter(format_y_axis))
 
-        high = max(row["Baseline"], row["Projected"], row["High 95%"])
+        high = max(row["Baseline"], row["Projected"], row["High Estimate"])
         padding = high * 0.2 if high != 0 else 1
         ax.set_ylim(0, high + padding)
 
@@ -271,8 +271,8 @@ display_cols = [
     "Baseline",
     "Projected",
     "Change vs Baseline",
-    "Low 95%",
-    "High 95%",
+    "Low Estimate",
+    "High Estimate",
 ]
 
 table = result[display_cols].copy()
@@ -281,8 +281,8 @@ for col in [
     "Baseline",
     "Projected",
     "Change vs Baseline",
-    "Low 95%",
-    "High 95%",
+    "Low Estimate",
+    "High Estimate",
 ]:
     table[col] = table[col].map(lambda x: f"{x:,.0f}")
 
@@ -312,8 +312,12 @@ summary = calculate_words_per_article()
 st.divider()
 
 st.caption(
-    "Projected = Baseline + Article Delta × Article Effect + "
-    "Mean Word Count Delta × Mean Words Effect + "
-    "Topic Delta × Topic Effect. "
-    "95% range includes coefficient uncertainty, covariance, and residual model error. Topics covered are determined by Editorial Tags. A topic is considered covered if the Editorial tag is used at least twice in a week, excluding Opinion, Investigation, and Cover Story tags since those are more like meta tags than topic tags."
+    "Projected = Baseline + Article Delta \u00d7 Article Effect + "
+    "Mean Word Count Delta \u00d7 Mean Words Effect + "
+    "Topic Delta \u00d7 Topic Effect. "
+    "\u201cLow Estimate\u201d and \u201cHigh Estimate\u201d reflect the range where the true outcome is likely to fall "
+    "95% of the time, accounting for uncertainty in the model\u2019s coefficients and natural week-to-week variability. "
+    "Topics covered are determined by Editorial Tags. A topic is considered covered if the Editorial tag is used "
+    "at least twice in a week, excluding Opinion, Investigation, and Cover Story tags since those are more like "
+    "meta tags than topic tags."
 )
