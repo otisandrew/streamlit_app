@@ -312,7 +312,7 @@ summary = calculate_words_per_article()
 st.divider()
 
 st.caption(
-    "Projections are based on a multiple regression model using historical data from FY24 to present. Projections do not account for external factors such as demand for news." 
+    "Projections are based on a multiple regression model using historical data from FY24 to present. Projections do not account for external factors such as demand for news. " 
     "Projected = Baseline + Article Delta \u00d7 Article Effect + "
     "Mean Word Count Delta \u00d7 Mean Words Effect + "
     "Topic Delta \u00d7 Topic Effect. "
