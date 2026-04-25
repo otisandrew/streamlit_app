@@ -8,6 +8,14 @@ st.set_page_config(
     layout="wide",
 )
 
+st.markdown("""
+    <style>
+    .block-container {
+        padding-top: 1rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 st.title("Weekly Article, Word Count, and Topic Dashboard")
 
 model = pd.DataFrame({
@@ -146,8 +154,8 @@ def calculate_projection(articles, mean_words, topics):
         + result["Residual Std Error"] ** 2
     ).pow(0.5)
 
-    result["Low Estimate"] = result["Projected"] - 1.96 * result["Approx Std Error"]
-    result["High Estimate"] = result["Projected"] + 1.96 * result["Approx Std Error"]
+    result["Low Estimate"] = result["Projected"] - 1.96 * result["Approx Std Error"].clip(lower=0)
+    result["High Estimate"] = result["Projected"] + 1.96 * result["Approx Std Error"].clip(lower=0)
 
     return result
 
