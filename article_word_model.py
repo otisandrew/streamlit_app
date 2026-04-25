@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("Weekly Article, Word Count, and Topic Model")
+st.title("Weekly Article, Word Count, and Topic Dashboard")
 
 model = pd.DataFrame({
     "Metric": [
@@ -228,7 +228,7 @@ def make_plot(result):
             fontweight="bold",
         )
 
-        ax.tick_params(axis="x", rotation=25)
+        ax.tick_params(axis="x", rotation=0)
 
     fig.suptitle("Weekly Chronicle.com Projected Metrics", y=1.05)
     plt.tight_layout()
@@ -299,15 +299,15 @@ st.pyplot(fig)
 
 summary = calculate_words_per_article()
 
-st.subheader("How many mean words is 1 article equal to?")
+#st.subheader("How many mean words is 1 article equal to?")
 
-st.dataframe(
-    summary[["Metric", "Display"]].rename(
-        columns={"Display": "Equivalent Mean Words"}
-    ),
-    width="stretch",
-    hide_index=True,
-)
+#st.dataframe(
+#    summary[["Metric", "Display"]].rename(
+#        columns={"Display": "Equivalent Mean Words"}
+#    ),
+#    width="stretch",
+#    hide_index=True,
+#)
 
 st.divider()
 
@@ -315,5 +315,5 @@ st.caption(
     "Projected = Baseline + Article Delta × Article Effect + "
     "Mean Word Count Delta × Mean Words Effect + "
     "Topic Delta × Topic Effect. "
-    "95% range includes coefficient uncertainty, covariance, and residual model error."
+    "95% range includes coefficient uncertainty, covariance, and residual model error. Topics covered are determined by Editorial Tags. A topic is considered covered if the Editorial tag is used at least twice in a week, excluding Opinion, Investigation, and Cover Story tags since those are more like meta tags than topic tags."
 )
